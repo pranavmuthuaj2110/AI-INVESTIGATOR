@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PayGuard AI – Autonomous Fraud Investigation</title>
+<style>
+:root{--bg:#f4f6fa;--sf:#fff;--tx:#14213d;--mu:#6b7690;--bd:#dfe4ee;--ac:#2563eb;--ok:#16a34a;--wn:#d97706;--hi:#ea580c;--cr:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--sf:#141b30;--tx:#e8ecf7;--mu:#8b97b5;--bd:#25304d;--ac:#5b8def;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
+nav{width:220px;background:var(--sf);border-right:1px solid var(--bd);padding:16px 10px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow:auto}
+nav h1{font-size:16px;margin:0 8px 2px}nav small{display:block;margin:0 8px 14px;color:var(--mu);font-size:11px}
+nav h6{margin:14px 8px 4px;color:var(--mu);font-size:10px;letter-spacing:.08em}
+nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--tx);cursor:pointer;margin:1px 0}
+nav a:hover{background:var(--bg)}nav a.on{background:var(--ac);color:#fff}
+main{flex:1;padding:22px;min-width:0;max-width:1100px}
+h2{margin:0 0 14px;font-size:20px}
+.g{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:14px}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}.g .c{margin:0}
+.n{font-size:26px;font-weight:700}.l{color:var(--mu);font-size:12px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-size:11px;text-transform:uppercase}
+tr.r{cursor:pointer}tr.r:hover{background:var(--bg)}.sc{overflow-x:auto}
+.b{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;color:#fff}
+.Low,.Safe{background:var(--ok)}.Medium,.Suspicious{background:var(--wn)}.High{background:var(--hi)}.Critical,.Fraud{background:var(--cr)}
+button,select,input,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 10px}
+button{background:var(--ac);color:#fff;border:0;cursor:pointer;font-weight:600}button.s{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}button.d{background:var(--cr)}button.o{background:var(--ok)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}textarea{width:100%;min-height:100px}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);width:0;transition:width .3s}
+.ag{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.hide{display:none}ul{padding-left:18px;margin:6px 0}
+.led{width:34px;height:34px;border-radius:50%;background:var(--bd);display:inline-block;margin-right:10px}
+.led.on.g1{background:#22c55e;box-shadow:0 0 14px #22c55e}.led.on.y1{background:#facc15;box-shadow:0 0 14px #facc15}.led.on.r1{background:#ef4444;box-shadow:0 0 14px #ef4444}
+.vb{display:flex;align-items:flex-end;gap:6px;height:110px}.vb div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:2px;position:relative}.vb span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--mu)}
+@media(max-width:760px){body{flex-direction:column}nav{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;gap:2px;border-right:0;border-bottom:1px solid var(--bd)}nav h1,nav small,nav h6{display:none}main{padding:14px}}
+@media print{nav,.noprint{display:none!important}}
+</style></head><body>
+<nav><h1>🛡️ PayGuard AI</h1><small>Autonomous Fraud Investigation</small>
+<h6>MAIN MENU</h6><div id="menu"></div></nav>
+<main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),rnd=n=>Math.floor(Math.random()*n),pick=a=>a[rnd(a.length)];
+const VIEWS=[["dash","Dashboard"],["live","Live Transactions"],["inv","AI Investigation Centre"],["risk","Risk Assessment"],["net","Account Network"],["scan","Link & Message Scanner"],["rep","Investigation Reports"],["appr","Approval Centre"],["esp","ESP32 Device Monitor"]];
+let TH=[30,60,80],txns=[],reports=[],queue=[],audit=[],alerts=[],view="dash",sel=null,flt="All",srt="time",q="";
+const names=["Arjun Rao","Meena Iyer","Karthik S","Divya N","Ravi Kumar","Sana Khan","Vimal R","Priya M"],recv=["shop.mart@upi","ravi.kumar@upi","quickcash99@upi","lucky.win@upi","grocer@upi","rent.pay@upi","mule.a7@upi","mule.b3@upi"];
+const cities=["Chennai","Bengaluru","Mumbai","Delhi","Lagos*","Unknown VPN"];
+const log=(a)=>{audit.unshift({t:new Date().toLocaleTimeString(),a});};
+function cat(s){return s>=TH[2]?"Critical":s>=TH[1]?"High":s>=TH[0]?"Medium":"Low"}
+function stat(s){return s>=TH[2]?"Fraud":s>=TH[1]-10?"Suspicious":"Safe"}
+function score(t){let s=rnd(12),r=[],e=[];
+ if(t.amount>50000){s+=28;r.push("Unusually high amount");e.push("₹"+t.amount+" exceeds 95th percentile of sender history")}
+ if(/mule|lucky|quickcash/.test(t.receiver)){s+=30;r.push("Receiver flagged in suspicious network");e.push(t.receiver+" linked to 4+ unrelated senders")}
+ if(/\*|VPN/.test(t.location)){s+=18;r.push("High-risk location");e.push("Origin: "+t.location)}
+ const h=+t.time.slice(0,2);if(h<5){s+=12;r.push("Odd-hour transaction");e.push("Initiated at "+t.time)}
+ if(t.amount<500)s-=6;return{score:Math.max(0,Math.min(100,s)),reasons:r,evidence:e}}
+function mk(o={}){const t=Object.assign({id:"TXN"+(100000+txns.length*7+rnd(6)),sender:pick(names),receiver:pick(recv),amount:pick([[120,450,900,2400,5000],[5000,12000,25000],[60000,95000,140000]][rnd(10)>7?2:rnd(10)>4?1:0]),time:new Date().toTimeString().slice(0,8),location:pick(cities.slice(0,rnd(10)>6?6:4))},o);
+ const r=score(t);Object.assign(t,r);t.status=stat(t.score);return t}
+function addTxn(t){txns.unshift(t);if(txns.length>150)txns.pop();if(t.score>=TH[1]){alerts.unshift(t);hw(t)}if(view==="dash"||view==="live")render()}
+for(let i=0;i<25;i++)txns.push(mk({time:`${String(rnd(24)).padStart(2,"0")}:${String(rnd(60)).padStart(2,"0")}:00`}));
+alerts=txns.filter(t=>t.score>=TH[1]).slice(0,6);
+setInterval(()=>addTxn(mk()),4000);
+// ESP32 simulated
+let dev={on:true,led:"none",buzz:false,hist:[]};
+function hw(t){const m=t.score>=TH[2]?["r1","Red LED + buzzer"]:t.score>=TH[1]-10?["y1","Yellow LED"]:["g1","Green LED"];dev.led=m[0];dev.buzz=m[0]==="r1";dev.hist.unshift(`${new Date().toLocaleTimeString()} · ${t.id} → ${m[1]}`);if(dev.hist.length>12)dev.hist.pop();if(view==="esp")render()}
+const B=(s)=>`<span class="b ${s}">${s}</span>`;
+function nav(){$("#menu").innerHTML=VIEWS.map(v=>`<a class="${v[0]===view?"on":""}" onclick="go('${v[0]}')">${v[1]}</a>`).join("")}
+function go(v){view=v;sel=null;location.hash=v;render()}
+function tbl(list,click=true){return `<div class="sc"><table><tr><th>ID</th><th>Sender</th><th>Receiver</th><th>Amount</th><th>Time</th><th>Location</th><th>Status</th><th>Risk</th></tr>${list.map(t=>`<tr class="${click?"r":""}" onclick="${click?`pickT('${t.id}')`:""}"><td>${t.id}</td><td>${t.sender}</td><td>${t.receiver}</td><td>₹${t.amount.toLocaleString("en-IN")}</td><td>${t.time}</td><td>${t.location}</td><td>${B(t.status)}</td><td>${t.score}</td></tr>`).join("")}</table></div>`}
+function pickT(id){sel=txns.find(t=>t.id===id);render()}
+function detail(t){return `<div class="c"><b>${t.id}</b> ${B(t.status)} ${B(cat(t.score))} · Risk ${t.score}/100<ul>${t.reasons.map(r=>`<li>${r}</li>`).join("")||"<li>No risk indicators</li>"}</ul><div class="l">Evidence</div><ul>${t.evidence.map(r=>`<li>${r}</li>`).join("")||"<li>—</li>"}</ul><div class="l">Recommended: ${t.score>=TH[2]?"Hold for human review, contact customer, escalate":t.score>=TH[1]?"Verify with sender via trusted channel":t.score>=TH[0]?"Monitor":"No action"}</div><div class="row" style="margin-top:8px"><button onclick="startInv('${t.id}')">Investigate</button><button class="s" onclick="sel=null;render()">Close</button></div></div>`}
+const V={
+dash(){const c=s=>txns.filter(t=>t.status===s).length,tot=txns.length,mx=Math.max(c("Safe"),1);
+ return `<h2>Dashboard</h2><div class="g"><div class="c"><div class="n">${tot}</div><div class="l">Transactions monitored</div></div><div class="c"><div class="n" style="color:var(--ok)">${c("Safe")}</div><div class="l">Safe</div></div><div class="c"><div class="n" style="color:var(--wn)">${c("Suspicious")}</div><div class="l">Suspicious</div></div><div class="c"><div class="n" style="color:var(--cr)">${c("Fraud")}</div><div class="l">Confirmed / likely fraud</div></div><div class="c"><div class="n">${((c("Fraud")+c("Suspicious"))/tot*100).toFixed(1)}%</div><div class="l">Fraud detection rate</div></div></div>
+ <div class="g" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"><div class="c"><b>Safe vs Suspicious vs Fraud</b><div class="vb" style="margin:14px 0 22px">${["Safe","Suspicious","Fraud"].map(s=>`<div class="${s}" style="height:${c(s)/mx*100}%"><span>${s} ${c(s)}</span></div>`).join("")}</div></div>
+ <div class="c"><b>AI agent status</b><ul><li>Transaction Investigator — ${agentState}</li><li>Network Investigator — ${agentState}</li><li>Threat Investigator — ${agentState}</li><li>Orchestrator — ${agentState==="Running"?"Merging":"Idle"}</li></ul><div class="l">${reports.length} investigation reports · ${queue.length} awaiting approval</div></div></div>
+ <div class="c"><b>Recent high-risk alerts</b>${tbl(alerts.slice(0,6))}</div>`},
+live(){let l=txns.filter(t=>(flt==="All"||cat(t.score)===flt)&&(t.id+t.sender+t.receiver).toLowerCase().includes(q.toLowerCase()));
+ l=[...l].sort((a,b)=>srt==="amount"?b.amount-a.amount:srt==="risk"?b.score-a.score:0);
+ return `<h2>Live Transaction Monitoring</h2><div class="row"><input id="q" placeholder="Search ID, sender, receiver" value="${q}" oninput="q=this.value;render(1)"><select onchange="flt=this.value;render()">${["All","Low","Medium","High","Critical"].map(x=>`<option ${x===flt?"selected":""}>${x}</option>`).join("")}</select><select onchange="srt=this.value;render()"><option value="time">Newest</option><option value="amount" ${srt==="amount"?"selected":""}>Amount ↓</option><option value="risk" ${srt==="risk"?"selected":""}>Risk ↓</option></select></div>
+ <div class="c noprint"><b>Submit transaction for analysis</b><div class="row" style="margin-top:8px"><input id="ms" placeholder="Sender" value="Arjun Rao"><input id="mr" placeholder="Receiver" value="mule.a7@upi"><input id="ma" type="number" placeholder="Amount ₹" value="75000"><select id="ml">${cities.map(x=>`<option>${x}</option>`).join("")}</select><button onclick="manual()">Analyze</button></div></div>
+ ${sel?detail(sel):""}${tbl(l.slice(0,30))}`},
+inv(){return `<h2>AI Fraud Investigation Centre</h2><div class="c"><div class="row"><select id="is">${txns.slice().sort((a,b)=>b.score-a.score).slice(0,15).map(t=>`<option value="${t.id}" ${sel&&sel.id===t.id?"selected":""}>${t.id} · ₹${t.amount} · ${t.receiver} · risk ${t.score}</option>`).join("")}</select><button onclick="startInv($('#is').value)">▶ Start investigation</button></div><div class="l">Agents run concurrently, then the orchestrator merges findings. No money is moved and no account is frozen — a human must approve every action.</div></div>
+ <div class="ag" id="ag">${[["tx","Transaction Investigator","Detects unusual patterns"],["nw","Network Investigator","Account relationships"],["th","Threat Investigator","Links & messages"]].map(a=>`<div class="c"><b>${a[1]}</b><div class="l">${a[2]}</div><div class="bar" style="margin:8px 0"><i id="p_${a[0]}"></i></div><div id="s_${a[0]}" class="l">Idle</div><ul id="f_${a[0]}"></ul></div>`).join("")}</div>
+ <div class="c"><b>Central Orchestrator</b><div class="bar" style="margin:8px 0"><i id="p_or"></i></div><div id="s_or" class="l">Waiting for agents</div><div id="out"></div></div>`},
+risk(){const test=Array.from({length:300},()=>{const t=mk();const truth=(t.amount>50000&&/mule|lucky|quick/.test(t.receiver))||(t.amount>50000&&/\*|VPN/.test(t.location))||/mule/.test(t.receiver)&&/\*|VPN/.test(t.location);return{s:t.score,truth}});
+ const pred=test.map(x=>x.s>=TH[1]),tp=test.filter((x,i)=>pred[i]&&x.truth).length,fp=test.filter((x,i)=>pred[i]&&!x.truth).length,fn=test.filter((x,i)=>!pred[i]&&x.truth).length;
+ return `<h2>AI Risk Assessment</h2><div class="c"><b>Configurable thresholds</b><div class="row" style="margin-top:8px">${["Medium ≥","High ≥","Critical ≥"].map((n,i)=>`<label>${n} <input type="number" style="width:70px" value="${TH[i]}" onchange="setTH(${i},this.value)"></label>`).join("")}</div>
+ <table><tr><th>Score</th><th>Class</th></tr><tr><td>0–${TH[0]-1}</td><td>${B("Low")}</td></tr><tr><td>${TH[0]}–${TH[1]-1}</td><td>${B("Medium")}</td></tr><tr><td>${TH[1]}–${TH[2]-1}</td><td>${B("High")}</td></tr><tr><td>${TH[2]}–100</td><td>${B("Critical")}</td></tr></table></div>
+ <div class="c"><b>Validation on 300 labelled synthetic test transactions</b> (High+ treated as flagged)<div class="g" style="margin:10px 0 0"><div class="c"><div class="n">${tp}</div><div class="l">True positives</div></div><div class="c"><div class="n">${fp}</div><div class="l">False positives</div></div><div class="c"><div class="n">${fn}</div><div class="l">Missed fraud</div></div><div class="c"><div class="n">${tp+fp?Math.round(tp/(tp+fp)*100):0}% / ${tp+fn?Math.round(tp/(tp+fn)*100):0}%</div><div class="l">Precision / Recall</div></div></div><div class="l" style="margin-top:8px">Tune thresholds, then reopen this page to re-run on a fresh batch.</div></div>
+ <div class="c"><b>Latest scored transaction</b></div>${detail(txns[0])}`},
+net(){const N=[["Arjun R",80,60],["Meena I",80,150],["Sana K",80,240],["Vimal R",80,330],["mule.a7",330,120],["mule.b3",330,270],["lucky.win",560,70],["quickcash99",560,200],["cash-out",560,330]],E=[[0,4],[1,4],[2,4],[3,5],[4,5],[4,6],[5,7],[5,8],[4,8],[7,8],[3,4]],bad=[4,5,6,7,8];
+ return `<h2>Account Relationship Investigation</h2><div class="c sc"><svg viewBox="0 0 700 380" width="100%" style="min-width:560px">${E.map(e=>`<line x1="${N[e[0]][1]}" y1="${N[e[0]][2]}" x2="${N[e[1]][1]}" y2="${N[e[1]][2]}" stroke="${bad.includes(e[0])&&bad.includes(e[1])?"#dc2626":"#8b97b5"}" stroke-width="${bad.includes(e[0])&&bad.includes(e[1])?3:1.5}"/>`).join("")}${N.map((n,i)=>`<circle cx="${n[1]}" cy="${n[2]}" r="22" fill="${bad.includes(i)?"#dc2626":"#2563eb"}"/><text x="${n[1]}" y="${n[2]+38}" text-anchor="middle" font-size="11" fill="currentColor">${n[0]}</text>`).join("")}</svg></div>
+ <div class="c"><b>Findings (simulated network)</b><ul><li>4 unrelated senders route funds into <b>mule.a7</b> within 20 minutes.</li><li>mule.a7 ↔ mule.b3 repeated transfers (7 in 24h) — layering pattern.</li><li>Funds fan out to <b>lucky.win</b>, <b>quickcash99</b> and a cash-out account.</li><li>Possible money-mule network: 5 connected suspicious accounts.</li></ul></div>`},
+scan(){return `<h2>Suspicious Link & Message Scanner</h2><div class="c"><textarea id="sm" placeholder="Paste a UPI link, SMS, WhatsApp message or payment request…">Dear user, your KYC expired. Pay ₹10 now at http://upi-pay.verify-sbi.xyz/collect?pa=lucky.win@upi or account will be blocked in 2 hours!</textarea><div class="row" style="margin-top:8px"><button onclick="doScan()">Scan</button><span class="l">Links are analysed as text only and never opened.</span></div><div id="sr"></div></div>`},
+rep(){return `<h2>Investigation Reports</h2>${reports.length?reports.map((r,i)=>`<div class="c"><b>${r.ref}</b> ${B(cat(r.t.score))} <span class="l">${r.at}</span><div>${r.t.id} · ₹${r.t.amount} → ${r.t.receiver} · risk ${r.t.score}</div><div class="l">Decision: ${r.decision}</div><div class="row" style="margin-top:8px"><button class="s" onclick="showRep(${i})">View</button></div></div>`).join(""):'<div class="c l">No reports yet. Run an investigation first.</div>'}<div id="rv"></div>`},
+appr(){return `<h2>Human Approval & Admin Control</h2><div class="c"><b>Pending approvals (${queue.length})</b>${queue.map((r,i)=>`<div style="padding:10px 0;border-top:1px solid var(--bd)"><b>${r.ref}</b> ${B(cat(r.t.score))} — ${r.t.id}, recommended: <i>${r.action}</i><div class="row" style="margin-top:6px"><input id="cm${i}" placeholder="Reviewer comment" style="flex:1"><button class="o" onclick="decide(${i},'Approved')">Approve</button><button class="d" onclick="decide(${i},'Rejected')">Reject</button><button class="s" onclick="decide(${i},'Escalated')">Escalate</button></div></div>`).join("")||'<div class="l">Nothing pending.</div>'}</div><div class="c"><b>Admin activity / audit log</b><ul>${audit.slice(0,15).map(a=>`<li>${a.t} — ${a.a}</li>`).join("")||"<li class='l'>No activity yet</li>"}</ul><div class="l">The system never transfers money, freezes accounts or alters assets.</div></div>`},
+esp(){return `<h2>ESP32 Device Monitor</h2><div class="c"><b>PayGuard-ESP32 (virtual)</b> · Connection: ${dev.on?'<span class="b Safe">Connected</span>':'<span class="b Fraud">Offline</span>'} <button class="s" onclick="dev.on=!dev.on;render()">Toggle link</button><div class="row" style="margin-top:12px"><span class="led ${dev.led==="g1"?"on g1":""}"></span><span class="led ${dev.led==="y1"?"on y1":""}"></span><span class="led ${dev.led==="r1"?"on r1":""}"></span><span>${dev.buzz?"🔔 Buzzer ON":"🔕 Buzzer off"}</span></div><div class="row"><button class="o" onclick="hw({score:5,id:'TEST'})">Test green</button><button style="background:var(--wn)" onclick="hw({score:TH[1]-5,id:'TEST'})">Test yellow</button><button class="d" onclick="hw({score:95,id:'TEST'})">Test red + buzzer</button><button class="s" onclick="dev.led='none';dev.buzz=false;render()">Clear</button></div><div class="l">Safe → green · Suspicious → yellow · Critical → red + buzzer. This is a browser simulation; connect real hardware by posting alert states to your ESP32 over HTTP/WebSocket.</div></div><div class="c"><b>Alert history</b><ul>${dev.hist.map(h=>`<li>${h}</li>`).join("")||"<li class='l'>None</li>"}</ul></div>`}
+};
+let agentState="Idle";
+function render(keep){nav();$("#app").innerHTML=V[view]();if(keep){const i=$("#q");if(i){i.focus();i.setSelectionRange(99,99)}}}
+function setTH(i,v){TH[i]=+v;TH.sort((a,b)=>a-b);log("Thresholds changed to "+TH.join("/"));render()}
+function manual(){const t=mk({sender:$("#ms").value,receiver:$("#mr").value,amount:+$("#ma").value||0,location:$("#ml").value});addTxn(t);sel=t;log("Manual submission "+t.id);render()}
+function doScan(){const m=$("#sm").value,u=(m.match(/https?:\/\/[^\s]+/g)||[]),f=[];let s=0;
+ const add=(p,t)=>{s+=p;f.push(t)};
+ u.forEach(x=>{const h=x.replace(/https?:\/\//,"").split(/[\/?]/)[0];if(/\.(xyz|top|click|work|tk)$/.test(h))add(25,"Risky TLD in "+h);if(!x.startsWith("https"))add(10,"Link is not HTTPS");if((h.match(/-/g)||[]).length>=1&&/sbi|hdfc|upi|paytm|bank/i.test(h))add(25,"Brand impersonation in domain "+h);if(/pa=/.test(x))add(15,"Embedded UPI collect request (pa=)")});
+ if(/urgent|blocked|expired|within \d+ (hours|mins)|kyc/i.test(m))add(20,"Urgency / account-threat language");
+ if(/otp|pin|password|cvv/i.test(m))add(20,"Asks for credentials");if(/pay ₹?\d+ (now|to receive)|collect/i.test(m))add(10,"Unsolicited payment request");
+ s=Math.min(100,s);$("#sr").innerHTML=`<div style="margin-top:12px"><b>Risk ${s}/100</b> ${B(cat(s))}<ul>${f.map(x=>`<li>${x}</li>`).join("")||"<li>No phishing indicators found</li>"}</ul><div class="l">${s>=TH[1]?"Do not click or pay. Report to 1930 / cybercrime.gov.in.":"Still verify the sender independently."}</div></div>`;log("Scanned message, risk "+s)}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function startInv(id){const t=txns.find(x=>x.id===id);if(view!=="inv"){view="inv";sel=null;render()}
+ agentState="Running";log("Investigation started "+id);const res={};
+ const run=async(k,steps,find)=>{$("#s_"+k).textContent="Running…";for(let i=0;i<steps;i++){await sleep(500+rnd(500));$("#p_"+k).style.width=(i+1)/steps*100+"%"}$("#s_"+k).textContent="Completed ✓";$("#f_"+k).innerHTML=find.map(x=>`<li>${x}</li>`).join("");res[k]=find};
+ const net=/mule|lucky|quick/.test(t.receiver);
+ await Promise.all([
+  run("tx",5,[t.amount>50000?`Amount ₹${t.amount} is ${Math.round(t.amount/4200)}× sender average`:"Amount within normal range",`Time ${t.time} ${+t.time.slice(0,2)<5?"is unusual":"is typical"}`,`Location ${t.location} ${/\*|VPN/.test(t.location)?"mismatches home city":"matches profile"}`]),
+  run("nw",7,[net?`${t.receiver} received funds from 4 unrelated senders in 20 min`:`${t.receiver} has stable history`,net?"Linked to 2 other flagged accounts (mule pattern)":"No links to flagged accounts"]),
+  run("th",4,[net?"Related payment link uses look-alike banking domain":"No malicious links associated","Linked messages: "+(net?"urgency + KYC threat wording":"none")])]);
+ $("#s_or").textContent="Merging findings…";for(let i=1;i<=4;i++){await sleep(300);$("#p_or").style.width=i*25+"%"}
+ const tot=Math.min(100,t.score+(net?6:0)),act=tot>=TH[2]?"Place hold for manual review & escalate":tot>=TH[1]?"Verify with sender; manual review":"Monitor";
+ const rep={ref:"AUD-"+Date.now().toString(36).toUpperCase(),at:new Date().toLocaleString(),t:Object.assign({},t,{score:tot}),res,action:act,decision:"Pending human review",timeline:["Transaction received","Agents dispatched in parallel","Findings merged by orchestrator","Report generated — awaiting human approval (interrupt)"]};
+ reports.unshift(rep);queue.unshift(rep);agentState="Idle";hw(rep.t);log("Report "+rep.ref+" generated, queued for approval");
+ $("#s_or").textContent="Complete ✓";$("#out").innerHTML=`<div style="margin-top:10px"><b>Final risk ${tot}/100</b> ${B(cat(tot))}<br>Recommended: ${act}.<div class="row" style="margin-top:8px"><button onclick="go('appr')">Go to Approval Centre</button><button class="s" onclick="go('rep')">View report</button></div></div>`}
+function decide(i,d){const r=queue.splice(i,1)[0],c=($("#cm"+i)||{}).value||"—";r.decision=`${d} — "${c}"`;log(`${d}: ${r.ref} (${c})`);render()}
+function showRep(i){const r=reports[i];$("#rv").innerHTML=`<div class="c"><h3 style="margin-top:0">Investigation Report ${r.ref}</h3><p>${r.t.id} · ${r.t.sender} → ${r.t.receiver} · ₹${r.t.amount} · ${r.t.location} · ${r.t.time}</p><p><b>Risk ${r.t.score}/100</b> ${B(cat(r.t.score))}</p>${[["tx","Transaction Investigator"],["nw","Network Investigator"],["th","Threat Investigator"]].map(a=>`<b>${a[1]}</b><ul>${(r.res[a[0]]||[]).map(x=>`<li>${x}</li>`).join("")}</ul>`).join("")}<b>Evidence</b><ul>${r.t.evidence.map(x=>`<li>${x}</li>`).join("")}</ul><b>Timeline</b><ol>${r.timeline.map(x=>`<li>${x}</li>`).join("")}</ol><p><b>Recommended action:</b> ${r.action}<br><b>Human decision:</b> ${r.decision}<br><b>Audit ref:</b> ${r.ref}</p><button class="noprint" onclick="window.print()">Export PDF (Print → Save as PDF)</button></div>`;$("#rv").scrollIntoView()}
+view=(location.hash.slice(1)&&V[location.hash.slice(1)])?location.hash.slice(1):"dash";
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(V[h]&&h!==view){view=h;render()}});
+render();
+</script></body></html>
